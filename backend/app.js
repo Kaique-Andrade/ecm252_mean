@@ -17,8 +17,9 @@ const {
 mongoose.connect(`mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_CLUSTER}.${MONGODB_ADDRESS}.mongodb.net/${MONGODB_DATABASE}?retryWrites=true&w=majority`)
 .then(()=>{
   console.log("Conexão Ok")
-}).catch(()=>{
+}).catch((e)=>{
   console.log("Conexão NOK")
+  console.log(e)
 });
 // aqui estamos especificando um middleware
 app.use(bodyParser.json());
@@ -32,9 +33,12 @@ app.post('/api/clientes', (req, res, next) => {
     fone:req.body.fone,
     email:req.body.email,
   })
-  cliente.save();
-  console.log(cliente);
-  res.status(201).json({mensagem: 'Cliente inserido'});
+  cliente.save().then((clienteInserido) =>{
+    console.log(cliente);
+    res.status(201).json({
+      mensagem: 'Cliente inserido',
+    id: clienteInserido._id});
+  });
 });
 
 app.get('/api/clientes', (req, res, next) => {
